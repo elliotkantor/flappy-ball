@@ -19,15 +19,40 @@ function draw() {
     ball.update();
     ball.show();
     score.show();
-    if (ball.playing) {
-        if ((frameCount - ball.startingFrame) % frameFreq == 0) {
-            pipes.push(new Pipe(random(padding, height - padding)));
+    if (!ball.failed) {
+        if (ball.playing) {
+            if ((frameCount - ball.startingFrame) % frameFreq == 0) {
+                pipes.push(new Pipe(random(padding, height - padding)));
+            }
+        } else {
+            text("Press SPACE to start.", width / 2, height / 3);
         }
+    } else {
+        noStroke();
+        fill(255, 0, 0);
+        textStyle(BOLD);
+        textSize(30);
+        text("GAME OVER.", width / 2, height / 2);
+        textSize(15);
+        text("You scored: " + score.score, width / 2, height / 2 + 50);
     }
+
     for (let pipe of pipes) {
         pipe.update(ball);
         pipe.show();
         ball.tally(pipe, score);
+        if (ball.checkCollision(pipe)) {
+            for (let p of pipes) {
+                p.moving = false;
+            }
+            break;
+        }
+
+        // remove pipes every so often
+        if (pipe.x + pipe.w + 10 < 0 && pipes.length > 50) {
+            pipes.splice(pipes.indexOf(pipe), 40);
+            continue;
+        }
     }
 }
 
