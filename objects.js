@@ -1,24 +1,26 @@
 class Ball {
     constructor() {
-        this.y = 50;
+        this.y = height / 2;
         this.vel = 0;
         this.gravity = 0.75;
-        this.x = width / 2;
+        this.x = width / 4;
         this.w = 30;
         this.playing = false;
+        this.startingFrame = 0;
     }
 
     update() {
-        this.vel += this.gravity;
-        this.y += this.vel;
-        if (this.y - this.w / 2 < 0) {
-            this.y = this.w / 2;
-            this.vel = 0;
-        } else if (this.y + this.w / 2 > height) {
-            this.y = height - this.w / 2;
+        if (this.playing) {
+            this.vel += this.gravity;
+            this.y += this.vel;
+            if (this.y - this.w / 2 < 0) {
+                this.y = this.w / 2;
+                this.vel = 0;
+            } else if (this.y + this.w / 2 > height) {
+                this.y = height - this.w / 2;
+            }
         }
     }
-
     show() {
         fill(255);
         ellipse(this.x, this.y, this.w);
@@ -26,7 +28,10 @@ class Ball {
 
     flap() {
         this.vel = -15;
-        this.playing = true;
+        if (!this.playing) {
+            this.playing = true;
+            this.startingFrame = frameCount;
+        }
     }
 
     tally(other, score) {
@@ -42,13 +47,15 @@ class Pipe {
         this.x = width;
         this.vel = -5;
         this.w = 30;
-        this.y = y;
-        this.opening = 120;
+        this.y = random(padding, height - padding);
+        this.opening = 200;
         this.scored = false;
     }
 
-    update() {
-        this.x += this.vel;
+    update(ball) {
+        if (ball.playing) {
+            this.x += this.vel;
+        }
     }
 
     show() {
